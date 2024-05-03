@@ -10,6 +10,7 @@ import RightSideBar from "@/components/sidebars/right-side";
 import { Wrench } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import HeaderNav from "@/components/mobile-components/header-nav";
 
 const MobileView = () => {
   return (
@@ -34,38 +35,28 @@ export default function Home() {
     typeof window !== "undefined" ? window.innerWidth : 0
   );
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== "undefined") setWindowWidth(window.innerWidth);
-    };
+  return (
+    <div className="bg-[#EDEDED] min-h-screen">
+      <Navbar />
 
-    // Add event listener to window resize
-    window.addEventListener("resize", handleResize);
-
-    // Remove event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  if (windowWidth < 1024) {
-    return <MobileView />;
-  } else {
-    return (
-      <div className="bg-[#EDEDED] min-h-screen">
-        <Navbar />
-        <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-7 gap-4">
+        <div className="hidden xl:block">
           <LeftSideBar />
-          <div className="col-span-3 h-screen overflow-y-auto no-scrollbar">
-            <div className="">
+        </div>
+
+        <div className="xl:col-span-3 h-screen overflow-y-auto no-scrollbar">
+          <div className="">
+            <div className="hidden xl:block">
               <StoryComponent />
-              <CreatePostComponent />
-              <ListPostsComponent />
             </div>
+            <CreatePostComponent />
+            <ListPostsComponent />
           </div>
+        </div>
+        <div className="hidden xl:block">
           <RightSideBar />
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

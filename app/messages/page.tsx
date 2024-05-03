@@ -44,6 +44,7 @@ export default function Messages({}: Props) {
   const { toast } = useToast();
   const [chatMessages, setChatMessages] = React.useState([] as any);
   const [uploadProgress, setUploadProgress] = React.useState<number[]>([]);
+  const [showFriends, setShowFriends] = React.useState(true);
 
   const friendId = params.get("friend");
 
@@ -102,6 +103,7 @@ export default function Messages({}: Props) {
           message: textMessage
         });
         console.log("Document written with ID: ", docRef.id);
+        setMessage(""); // Clear the message input after sending
       }
 
       if (sendImages.length !== 0) {
@@ -238,55 +240,71 @@ export default function Messages({}: Props) {
     }
 
     console.log("MESSAGE CHAT: ", chatMessages);
-  }, [chatMessages, friendId, noMessages, session]);
+  }, [chatMessages, friendId, noMessages, session, params]);
 
   return (
     <div className="w-full bg-[#EDEDED] h-[100vh]">
       <Navbar />
-      <div className="p-4 rounded-lg bg-white m-4 h-[87%]">
-        <h1 className="text-2xl font-bold ">Messages</h1>
-        <div className="grid grid-cols-5 gap-2 mt-6 divide-x-2 h-[90%]">
-          <div className="col-span-1 space-y-2">
-            {!isLoading &&
-              friends?.results?.map((fr: any) => {
-                return (
-                  <div
-                    key={fr.id}
-                    className="flex gap-2 p-2 hover:bg-gray-300 rounded-lg cursor-pointer"
-                    onClick={() => {
-                      setNoMessages(false);
-                      createChat();
-                      router.push(`/messages?friend=${fr.friend.id}`);
-                    }}
-                  >
-                    <img
-                      src={fr.friend.profile_picture ?? "/images/profile.jpg"}
-                      alt="profile"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="text-xl font-medium">
-                      <div>
-                        {fr.friend.first_name} {fr.friend.last_name}
+      <div className="p-4 rounded-lg bg-white my-2 xl:m-4 h-[87%]">
+        <h1 className="text-lg xl:text-2xl font-bold ">Messages</h1>
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-2 mt-6 divide-x-2 h-[90%]">
+          {showFriends && window.innerWidth < 425 && !params.get("friend") && (
+            <div className="col-span-1 space-y-2">
+              {!isLoading &&
+                friends?.results?.map((fr: any) => {
+                  return (
+                    <div
+                      key={fr.id}
+                      className="flex gap-2 p-2 hover:bg-gray-300 rounded-lg cursor-pointer items-center"
+                      onClick={() => {
+                        setNoMessages(false);
+                        createChat();
+                        router.push(`/messages?friend=${fr.friend.id}`);
+                        if (typeof window !== "undefined") {
+                          if (window.innerWidth < 425) setShowFriends(false);
+                        }
+                      }}
+                    >
+                      <img
+                        src={fr.friend.profile_picture ?? "/images/profile.jpg"}
+                        alt="profile"
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div className="text-xs xl:text-xl font-medium">
+                        <div>
+                          {fr.friend.first_name} {fr.friend.last_name}
+                        </div>
+                        {/* <div className="text-gray-500 text-xs">Active 3m ago</div> */}
                       </div>
-                      <div className="text-gray-500 text-xs">Active 3m ago</div>
                     </div>
-                  </div>
-                );
-              })}
-          </div>
+                  );
+                })}
+            </div>
+          )}
+
           <div className="col-span-4 h-full">
             {noMessages && (friendId === undefined || friendId === null) ? (
               <div className="flex justify-center items-center h-full">
-                <div className="text-gray-400 text-2xl">
+                <div className="text-gray-400 text-2xl text-center">
                   Select a chat to start messaging
                 </div>
               </div>
             ) : (
               <div className="flex flex-col justify-center items-center h-full">
-                {/* <div className="text-gray-400 text-2xl mb-5">
-                  Message for friend {friendId}
-                </div> */}
-                <div className="h-full flex flex-col w-full px-10">
+                {!showFriends && params?.get("friend") && (
+                  <div
+                    className="block lg:hidden text-gray-400 text-sm mb-5 cursor-pointer text-center"
+                    onClick={() => {
+                      const newParams = new URLSearchParams();
+                      newParams.delete("friend");
+                      router.push(`/messages?${newParams.toString()}`);
+                      setShowFriends(!showFriends);
+                    }}
+                  >
+                    Show Friends
+                  </div>
+                )}
+                <div className="h-full flex flex-col w-full p-1 xl:px-10">
                   <div className="flex-1 border-t border-gray-200 no-scrollbar max-h-[87%] overflow-y-auto flex flex-col">
                     {(friendId !== undefined || friendId !== null) &&
                       chatMessages?.length !== 0 &&
@@ -366,21 +384,7 @@ export default function Messages({}: Props) {
                             </div>
                           );
                         })}
-                        {/* Upload Progress Bar */}
 
-                        {/* {uploadProgress.length !== 0 && (
-                        <div className="absolute bottom-0 left-0 right-0">
-                          {uploadProgress.map((progress, index) => (
-                            <Progress
-                              key={index}
-                              value={progress}
-                              className="w-full"
-                            />
-                          ))}
-                        </div>
-                      )} */}
-
-                        {/* Remove All Button */}
                         <button
                           className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg flex items-center gap-2"
                           onClick={() => setSendImages([])}
@@ -394,15 +398,15 @@ export default function Messages({}: Props) {
                     <input
                       type="text"
                       placeholder="Type a message"
-                      className="flex-1 border border-gray-300 rounded-lg p-2"
+                      className="flex-1 border border-gray-300 rounded-lg p-2 text-xs md:text-md"
                       onChange={(e) => setMessage(e.target.value)}
                     />
 
                     <label
                       htmlFor="upload_image"
-                      className="bg-blue-500 text-white  text-center px-5 py-2 rounded-lg"
+                      className="bg-blue-500 text-white px-5 py-2 rounded-lg text-center"
                     >
-                      <ImagePlus size={20} className="inline-block " />
+                      <ImagePlus className="inline-block w-4 h-4 lg:w-6 lg:h-6" />
                     </label>
                     <input
                       type="file"
@@ -417,8 +421,10 @@ export default function Messages({}: Props) {
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
                       onClick={sendMessage}
                     >
-                      <Send size={20} />
-                      Send
+                      <Send className="w-4 h-4 lg:w-6 lg:h-6" />
+                      <span className='hidden sm:inline-block" text-xs font-medium'>
+                        Send
+                      </span>
                     </button>
                   </div>
                 </div>

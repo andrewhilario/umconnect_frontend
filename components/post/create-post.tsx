@@ -124,7 +124,7 @@ export default function CreatePostComponent({}: Props) {
 
   return (
     <div className="flex gap-4 bg-white rounded-xl p-4 mt-5">
-      <Avatar>
+      <Avatar className="z-10">
         <AvatarImage
           src={profile?.profile_picture ?? "https://picsum.photos/200/300"}
           alt="User"

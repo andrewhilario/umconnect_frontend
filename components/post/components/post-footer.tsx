@@ -78,7 +78,7 @@ export default function PostFooterComponent({ id, contents }: Props) {
         />
       </div>
       <div className="flex justify-between items-center gap-3 mt-5 mb-3">
-        <Avatar className="w-10 h-10 border border-blue-600">
+        <Avatar className="w-10 h-10 border border-blue-600 z-10">
           {profile?.profile_picture && (
             <AvatarImage src={profile?.profile_picture} alt="profile" />
           )}

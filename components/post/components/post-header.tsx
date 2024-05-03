@@ -21,7 +21,7 @@ export default function PostHeaderComponent({
 }: Props) {
   return (
     <div className="flex gap-2">
-      <Avatar>
+      <Avatar className="z-10">
         <AvatarImage src={profile_picture} alt="profile" />
         <AvatarFallback>JD</AvatarFallback>
       </Avatar>
