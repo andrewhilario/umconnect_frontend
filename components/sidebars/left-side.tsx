@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -13,23 +15,35 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion";
+import useGetProfileByUser from "@/hooks/useGetProfileByUser";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
 export default function LeftSideBar({}: Props) {
+  const { profile } = useGetProfileByUser();
+  const router = useRouter();
   return (
     <div className="flex flex-col gap-2 p-5 col-span-2 w-[80%] justify-self-start ">
       <div
         className="flex items-center gap-2
         cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
+        onClick={() => router.push(`/profile`)}
       >
         <Avatar className="border-2 border-blue-600 ">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage
+            src={profile?.profile_picture ?? "/images/profile.jpg"}
+            alt="profile"
+          />
+          <AvatarFallback>
+            {profile?.first_name[0]} {profile?.last_name[0]}
+          </AvatarFallback>
         </Avatar>
         <div>
           <p className="text-2xl">
-            <strong>Shad CN</strong>
+            <strong>
+              {profile?.first_name} {profile?.last_name}
+            </strong>
           </p>
         </div>
       </div>
@@ -81,6 +95,7 @@ export default function LeftSideBar({}: Props) {
           <AccordionContent
             className="flex items-center gap-4
             cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
+            onClick={() => router.push(`/reels`)}
           >
             <Film size={24} className="text-blue-600" />
             <div>

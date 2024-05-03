@@ -1,17 +1,17 @@
-"use client";
-
-import { API_URL } from "@/constant/api";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useGetAllPosts() {
+export default function useGetAllEmoji() {
+  const API_KEY = "4649556a20bcf173d76880aed9724a1e250ec7ea";
+  const baseUrl = "https://emoji-api.com";
+
   const {
-    data: posts,
+    data: emojis,
     isLoading,
     error
   } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ["emoji", API_KEY],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/posts/`, {
+      const response = await fetch(`${baseUrl}/emojis?access_key=${API_KEY}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -25,10 +25,12 @@ export default function useGetAllPosts() {
       } else {
         throw new Error(data.message);
       }
-    },
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: 1000 * 60 * 1 // 1 minute
+    }
   });
 
-  return { posts, isLoading, error };
+  return {
+    emojis,
+    isLoading,
+    error
+  };
 }

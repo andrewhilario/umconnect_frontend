@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import {
   Bell,
@@ -11,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import useUpdateAuthToken from "@/hooks/useUpdateAuthToken";
+import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 
 type Props = {};
 
@@ -18,6 +20,7 @@ export default function Navbar({}: Props) {
   const router = useRouter();
   const { data: session } = useSession();
   const { updateToken } = useUpdateAuthToken();
+  const { profile } = useGetProfileByUser();
 
   useEffect(() => {
     console.log("SESSION", session?.token);
@@ -61,8 +64,12 @@ export default function Navbar({}: Props) {
         />
         <Popover>
           <PopoverTrigger>
-            <div className="rounded-full bg-white text-blue-900 p-2">
-              <User size={32} />
+            <div className="w-12 h-12  rounded-full text-blue-900">
+              <img
+                src={profile?.profile_picture}
+                alt="profile"
+                className="rounded-full w-full h-full object-cover"
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent className="p-2" align="end">

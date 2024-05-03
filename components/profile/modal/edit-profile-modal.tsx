@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import useGetProfileByUser from "@/hooks/useGetProfileByUser";
+import { toast } from "@/components/ui/use-toast";
+import { useForm } from "react-hook-form";
+import useUpdateProfile from "@/hooks/useUpdateProfile";
+import { useRouter } from "next/navigation";
 
 type Props = {
   trigger: React.ReactNode;
@@ -20,27 +25,87 @@ type Props = {
 };
 
 export default function EditProfileModal({ trigger, className }: Props) {
+  const { profile } = useGetProfileByUser();
+  const router = useRouter();
   const [profilePicture, setProfilePicture] = React.useState<string>("");
   const [coverPicture, setCoverPicture] = React.useState<string>("");
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+
+  const { updateProfile } = useUpdateProfile();
+
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
+
   const onProfilePhotoChange = (e: any) => {
-    const file = e.target.files[0]!;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      setProfilePicture(dataUrl as string);
-    };
+    const file = e.target.files[0];
+
+    if (file && file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Oops!",
+        description: "File size exceeds 2MB",
+        variant: "destructive"
+      });
+    }
+
+    setProfilePicture(file);
+
+    // const reader = new FileReader();
+    // reader.readAsDataURL(file);
+    // reader.onload = () => {
+    //   const dataUrl = reader.result;
+    //   setProfilePicture(dataUrl as string);
+    // };
   };
 
   const onCoverPhotoChange = (e: any) => {
-    const file = e.target.files[0]!;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      setCoverPicture(dataUrl as string);
+    const file = e.target.files[0];
+
+    if (file && file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Oops!",
+        description: "File size exceeds 2MB",
+        variant: "destructive"
+      });
+    }
+
+    setCoverPicture(file);
+  };
+
+  const onEditSubmit = (data: any) => {
+    const editData = {
+      ...data,
+      profile_picture: profilePicture,
+      cover_picture: coverPicture
     };
+    console.log("PROFILE IMAGE AND COVER IMAGE", profilePicture, coverPicture);
+
+    console.log("Edit Profile Data", editData);
+
+    const formData = new FormData();
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("bio", data.bio);
+
+    if (profilePicture) {
+      formData.append("profile_picture", profilePicture);
+    }
+
+    if (coverPicture) {
+      formData.append("cover_photo", coverPicture);
+    }
+
+    updateProfile(formData, {
+      onSuccess: () => {
+        setProfilePicture("");
+        setCoverPicture("");
+
+        router.refresh();
+      }
+    });
   };
 
   return (
@@ -66,7 +131,7 @@ export default function EditProfileModal({ trigger, className }: Props) {
               </label>
             ) : (
               <img
-                src={profilePicture}
+                src={URL.createObjectURL(new Blob([profilePicture]))}
                 alt="profile"
                 className="w-32 h-32 rounded-full mx-auto"
               />
@@ -94,7 +159,7 @@ export default function EditProfileModal({ trigger, className }: Props) {
               </label>
             ) : (
               <img
-                src={coverPicture}
+                src={URL.createObjectURL(new Blob([coverPicture]))}
                 alt="profile"
                 className="w-full h-44 mx-auto rounded-lg object-cover"
               />
@@ -112,9 +177,10 @@ export default function EditProfileModal({ trigger, className }: Props) {
             <input
               type="text"
               id="first_name"
-              name="first_name"
               placeholder="First Name"
               className="rounded-lg p-2 border border-gray-400"
+              defaultValue={profile?.first_name}
+              {...register("first_name", { required: true })}
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -122,9 +188,10 @@ export default function EditProfileModal({ trigger, className }: Props) {
             <input
               type="text"
               id="last_name"
-              name="last_name"
               placeholder="Last Name"
               className="rounded-lg p-2 border border-gray-400"
+              defaultValue={profile?.last_name}
+              {...register("last_name", { required: true })}
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -132,23 +199,36 @@ export default function EditProfileModal({ trigger, className }: Props) {
             <input
               type="email"
               id="email"
-              name="email"
               placeholder="Email"
               className="rounded-lg p-2 border border-gray-400"
+              readOnly
+              defaultValue={profile?.email}
+              onClick={(e) => {
+                e.preventDefault();
+                toast({
+                  title: "Oops!",
+                  description: "Email cannot be changed",
+                  variant: "destructive"
+                });
+              }}
             />
           </div>
           <div className="flex flex-col gap-4">
             <label htmlFor="phone">Bio</label>
             <Textarea
               id="bio"
-              name="bio"
               placeholder="Bio"
               className="rounded-lg p-2 border border-gray-400"
+              defaultValue={profile?.bio}
+              {...register("bio", { required: true })}
             />
           </div>
         </div>
         <DialogFooter>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+            onClick={handleSubmit(onEditSubmit)}
+          >
             Save Changes
           </button>
         </DialogFooter>

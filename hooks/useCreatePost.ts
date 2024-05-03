@@ -17,7 +17,7 @@ export default function useCreatePost() {
         headers: {
           Authorization: token
         },
-        body: JSON.stringify(data)
+        body: data
       });
 
       const res = await response.json();

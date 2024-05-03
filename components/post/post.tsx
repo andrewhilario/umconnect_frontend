@@ -5,11 +5,15 @@ import React, { useEffect } from "react";
 import PostHeaderComponent from "./components/post-header";
 import PostFooterComponent from "./components/post-footer";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 type Props = {
   contents: {
+    id: number;
     content: string;
     post_image: any;
+    created_at: string;
+    post_type: string;
   };
   user: {
     id: any;
@@ -17,9 +21,11 @@ type Props = {
     last_name: string;
     profile_picture: string;
   };
+
+  is_shared?: boolean;
 };
 
-export default function Post({ contents, user }: Props) {
+export default function Post({ contents, user, is_shared = false }: Props) {
   const router = useRouter();
   const [images, setImages] = React.useState([]);
 
@@ -34,6 +40,10 @@ export default function Post({ contents, user }: Props) {
     <div className="flex flex-col gap-4 bg-white rounded-xl p-4">
       <PostHeaderComponent
         {...user}
+        timestamp={formatDistanceToNow(contents.created_at, {
+          addSuffix: true
+        })}
+        post_type={contents.post_type}
         onClick={() => {
           router.push(`/profile/${user.id}`);
         }}
@@ -82,7 +92,9 @@ export default function Post({ contents, user }: Props) {
             }
           })}
       </div>
-      <PostFooterComponent />
+      {!is_shared && (
+        <PostFooterComponent id={contents.id} contents={contents} />
+      )}
     </div>
   );
 }
