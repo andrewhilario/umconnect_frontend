@@ -11,9 +11,10 @@ import { FaShare } from "react-icons/fa";
 type Props = {
   id?: number;
   contents: any;
+  isShared?: boolean;
 };
 
-export default function PostFooterComponent({ id, contents }: Props) {
+export default function PostFooterComponent({ id, contents, isShared }: Props) {
   const { profile } = useGetProfileByUser();
   const [postId, setPostId] = React.useState<number | null>(
     id as number | null
@@ -63,19 +64,21 @@ export default function PostFooterComponent({ id, contents }: Props) {
           <MessageSquareMore size={16} className="text-blue-600" />
           <p className="text-sm font-medium">Comment</p>
         </div>
-        <SharePostModal
-          contents={contents}
-          trigger={
-            <div
-              className="flex gap-2 items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer"
-              onClick={() => setPostId(id as number)}
-            >
-              <FaShare size={16} className="text-blue-600" />
-              <p className="text-sm font-medium">Share</p>
-            </div>
-          }
-          id={postId as number}
-        />
+        {!isShared && (
+          <SharePostModal
+            contents={contents}
+            trigger={
+              <div
+                className="flex gap-2 items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer"
+                onClick={() => setPostId(id as number)}
+              >
+                <FaShare size={16} className="text-blue-600" />
+                <p className="text-sm font-medium">Share</p>
+              </div>
+            }
+            id={postId as number}
+          />
+        )}
       </div>
       <div className="flex justify-between items-center gap-3 mt-5 mb-3">
         <Avatar className="w-10 h-10 border border-blue-600 z-10">

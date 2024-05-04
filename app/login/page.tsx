@@ -62,12 +62,14 @@ export default function Login({}: Props) {
   };
 
   return (
-    <div className="flex justify-between items-center mx-64 mt-80">
-      <div className=" text-center ">
-        <h1 className="2xl:text-7xl text-blue-500 font-semibold">um connect</h1>
-        <p className="2xl:text-2xl">Connect, Share and Earn</p>
+    <div className="flex flex-col lg:flex-row justify-between items-center mt-24 xl:mx-64 xl:mt-80">
+      <div className="text-center ">
+        <h1 className="text-4xl 2xl:text-7xl text-blue-500 font-semibold">
+          um connect
+        </h1>
+        <p className="text-xs 2xl:text-2xl">Connect, Share and Earn</p>
       </div>
-      <div className="w-[40%] shadow-md p-10 rounded-lg">
+      <div className="w-full lg:w-[40%] shadow-md p-10 rounded-lg">
         <form
           className="flex flex-col space-y-3"
           onSubmit={handleSubmit(onSubmit)}

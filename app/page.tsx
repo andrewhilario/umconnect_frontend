@@ -40,7 +40,7 @@ export default function Home() {
       <Navbar />
 
       <div className="grid grid-cols-1 xl:grid-cols-7 gap-4">
-        <div className="hidden xl:block">
+        <div className="hidden xl:block col-span-2">
           <LeftSideBar />
         </div>
 
@@ -53,7 +53,7 @@ export default function Home() {
             <ListPostsComponent />
           </div>
         </div>
-        <div className="hidden xl:block">
+        <div className="hidden xl:block xl:col-span-2">
           <RightSideBar />
         </div>
       </div>

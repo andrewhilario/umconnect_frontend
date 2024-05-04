@@ -248,7 +248,7 @@ export default function Messages({}: Props) {
       <div className="p-4 rounded-lg bg-white my-2 xl:m-4 h-[87%]">
         <h1 className="text-lg xl:text-2xl font-bold ">Messages</h1>
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-2 mt-6 divide-x-2 h-[90%]">
-          {showFriends && window.innerWidth < 425 && !params.get("friend") && (
+          {showFriends && !params.get("friend") && (
             <div className="col-span-1 space-y-2">
               {!isLoading &&
                 friends?.results?.map((fr: any) => {

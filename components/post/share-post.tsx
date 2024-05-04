@@ -51,7 +51,11 @@ export default function SharePost({ contents, user, share }: Props) {
       <div className="p-2 border rounded-lg border-gray-500">
         <Post contents={contents} user={user} is_shared={true} />
       </div>
-      <PostFooterComponent id={contents.id} contents={contents} />
+      <PostFooterComponent
+        id={contents.id}
+        contents={contents}
+        isShared={true}
+      />
     </div>
   );
 }
