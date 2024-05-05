@@ -81,7 +81,7 @@ type Props = {
 
 export default function ProfilePageById() {
   const { data: session } = useSession();
-  const { selectedEmoji, setSelectedEmoji } = useSelectedEmoji();
+
   const { profile, profileLoading, profileError } = useViewProfileByUsername();
   const { userPosts, userPostsError, userPostsLoading } = useGetPostByUser();
   const { sendFriendRequest, sendFriendReqLoading } = useSendFriendRequest();
@@ -298,10 +298,9 @@ export default function ProfilePageById() {
                       trigger={
                         <input
                           type="text"
-                          placeholder={`What's on your mind, ${profile?.first_name}? ${selectedEmoji}`}
+                          placeholder={`What's on your mind, ${profile?.first_name}? `}
                           className="w-full outline-none border border-gray-500 rounded-full p-2"
                           // readOnly
-                          value={selectedEmoji as string}
                         />
                       }
                     />
@@ -361,104 +360,3 @@ export default function ProfilePageById() {
     </div>
   );
 }
-
-function EmojiPickerComponent() {
-  const { emojis, isLoading, error } = useGetAllEmoji();
-  const [category, setCategory] = useState("smileys-emotion");
-  const { selectedEmoji, setSelectedEmoji } = useSelectedEmoji();
-
-  const { emojiCategory, emojiCategoryLoading, emojiCategoryError } =
-    useGetEmojiCategory();
-
-  const { emojiOnCategory, emojiOnCategoryLoading, emojiOnCategoryError } =
-    useGetEmojiInCategory({ category });
-
-  useEffect(() => {
-    console.log("Category: " + category);
-    console.log("Emojis in Category: ", emojiOnCategory);
-  }, [category, emojiOnCategory]);
-
-  if (isLoading && emojiCategoryLoading && emojiOnCategoryLoading) {
-    return (
-      <div className="p-2 border-2 border-gray-200 rounded-lg">
-        <Loader2 size={24} className="text-blue-600 animate-spin" />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <Popover>
-        <PopoverTrigger>
-          <div
-            className="p-2 border-2 border-gray-200 rounded-lg cursor-pointer"
-            onClick={() => console.log("Emoji Picker", emojiCategory)}
-          >
-            <Smile size={24} className="text-blue-600" />
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-[400px]">
-          <Carousel>
-            <CarouselContent className="px-10 w-[300px]">
-              {items?.map((itemName, index) => {
-                const IconComponent = iconComponents[itemName.item];
-                if (!IconComponent) return null;
-
-                return (
-                  <CarouselItem
-                    className="basis-1/7 z-50 cursor-pointer"
-                    key={index}
-                    onClick={() => setCategory(itemName.label)}
-                  >
-                    <IconComponent size={24} className="text-blue-600" />
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-1" />
-            <CarouselNext className="absolute right-1" />
-          </Carousel>
-          <hr className="my-2 border-gray-500" />
-          <ScrollArea
-            className="h-[300px] overflow-y-auto"
-            style={{ maxHeight: "300px" }}
-          >
-            {emojiOnCategoryLoading && (
-              <div className="p-2 border-2 border-gray-200 rounded-lg flex items-center justify-center gap-2">
-                <Loader2 size={24} className="text-blue-600 animate-spin" />
-                <p className="text-blue-600">
-                  Loading emojis in category {category}
-                </p>
-              </div>
-            )}
-
-            <div className="grid grid-cols-8 gap-2">
-              {emojiOnCategory?.map((emoji: any) => {
-                return (
-                  <div
-                    key={emoji.codePoint}
-                    className="p-2 rounded-lg cursor-pointer hover:bg-gray-200 "
-                    onClick={() => setSelectedEmoji(emoji.character)}
-                    onChange={() => setSelectedEmoji(emoji.character)}
-                  >
-                    <p>{emoji.character}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </PopoverContent>
-      </Popover>
-    </>
-  );
-}
-
-export const useSelectedEmoji = () => {
-  const [selectedEmoji, setSelectedEmoji] = useState<string>("");
-
-  useEffect(() => {
-    console.log("Selected Emoji: ", selectedEmoji); // Log the selected emoji
-  }, [selectedEmoji]);
-
-  return { selectedEmoji, setSelectedEmoji };
-};
