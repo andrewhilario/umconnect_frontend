@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { FaPray } from "react-icons/fa";
 import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 import useCreatePost from "@/hooks/useCreatePost";
+import ProfileImageComponent from "../profile-image/profile-image";
 
 type Props = {};
 
@@ -124,12 +125,17 @@ export default function CreatePostComponent({}: Props) {
 
   return (
     <div className="flex gap-4 bg-white rounded-xl p-4 mt-5">
-      <Avatar className="z-10">
+      {/* <Avatar className="z-10">
         <AvatarImage
           src={profile?.profile_picture ?? "https://picsum.photos/200/300"}
           alt="User"
         />
-      </Avatar>
+      </Avatar> */}
+      <ProfileImageComponent
+        image={profile?.profile_picture}
+        className="w-12 h-12"
+        imageClassName="rounded-full w-full h-full object-cover"
+      />
       <form className="block w-full" onSubmit={handleSubmit(onPostSubmit)}>
         <p className="text-md">
           <strong>

@@ -1,3 +1,4 @@
+import ProfileImageComponent from "@/components/profile-image/profile-image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Earth, Lock, Users } from "lucide-react";
 import React from "react";
@@ -21,10 +22,11 @@ export default function PostHeaderComponent({
 }: Props) {
   return (
     <div className="flex gap-2">
-      <Avatar className="z-10">
-        <AvatarImage src={profile_picture} alt="profile" />
-        <AvatarFallback>JD</AvatarFallback>
-      </Avatar>
+      <ProfileImageComponent
+        image={profile_picture}
+        className="w-10 h-10"
+        imageClassName="rounded-full"
+      />
       <div className="block">
         <p
           className="text-md text-blue-600 hover:underline cursor-pointer"

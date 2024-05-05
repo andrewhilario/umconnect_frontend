@@ -18,6 +18,7 @@ type Props = {};
 
 export default function RegistrationModalComponent({}: Props) {
   const { register: UserRegistration } = useUserRegistration();
+
   const {
     register,
     handleSubmit,
@@ -58,7 +59,7 @@ export default function RegistrationModalComponent({}: Props) {
           Create a new account
         </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-full xl:w-[500px]">
         <DialogTitle>Sign Up</DialogTitle>
         <hr className="my-2" />
         <form
@@ -93,8 +94,9 @@ export default function RegistrationModalComponent({}: Props) {
           />
           <input
             type="tel"
-            placeholder="Phone Number"
+            placeholder="e.g. +639123456789"
             className="p-2 border border-gray-300 rounded-md"
+            maxLength={13}
             {...register("phone_number", { required: true })}
           />
           <input

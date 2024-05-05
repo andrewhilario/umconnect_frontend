@@ -41,7 +41,7 @@ export default function StoryComponent({}: Props) {
         >
           <div className="relative rounded-lg h-full">
             <img
-              src={profile?.profile_picture}
+              src={profile?.profile_picture ?? "/images/default.png"}
               alt="Reel"
               className="w-full h-full object-cover rounded-lg"
             />

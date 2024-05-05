@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import useUpdateAuthToken from "@/hooks/useUpdateAuthToken";
 import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 import HeaderNav from "../mobile-components/header-nav";
+import ProfileImageComponent from "../profile-image/profile-image";
 
 type Props = {};
 
@@ -66,13 +67,11 @@ export default function Navbar({}: Props) {
           />
           <Popover>
             <PopoverTrigger>
-              <div className="w-12 h-12  rounded-full text-blue-900">
-                <img
-                  src={profile?.profile_picture}
-                  alt="profile"
-                  className="rounded-full w-full h-full object-cover"
-                />
-              </div>
+              <ProfileImageComponent
+                image={profile?.profile_picture}
+                className="w-12 h-12  rounded-full text-blue-900"
+                imageClassName="rounded-full w-full h-full object-cover"
+              />
             </PopoverTrigger>
             <PopoverContent
               className="p-2 w-[150px] text-sm xl:w-full xl:text-md"
@@ -81,7 +80,7 @@ export default function Navbar({}: Props) {
               <div
                 className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
                 onClick={() => {
-                  router.push("/profile");
+                  router.push(`/profile/${session?.username}`);
                 }}
               >
                 <User size={24} className="text-blue-600" />

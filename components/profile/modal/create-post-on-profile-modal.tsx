@@ -145,8 +145,9 @@ function CreatePostComponentOnProfile() {
       <div className="flex items-center gap-2">
         <Avatar>
           <AvatarImage
-            src={profile?.profile_picture ?? "https://picsum.photos/200/300"}
+            src={profile?.profile_picture ?? "/images/default.png"}
             alt="User"
+            className="object-cover"
           />
         </Avatar>
         <div className="block">
@@ -211,10 +212,10 @@ function CreatePostComponentOnProfile() {
         className="block w-full relative"
         onSubmit={handleSubmit(onPostSubmit)}
       >
-        <EmojiPickerComponent
+        {/* <EmojiPickerComponent
           className="absolute right-2 top-10 cursor-pointer"
           onClick={() => console.log("Emoji Picker", selectedEmoji)}
-        />
+        /> */}
         <Textarea
           placeholder="What's on your mind?"
           className="w-full border border-gray-400 focus:ring-0 focus:outline-none mt-2 resize-none"

@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import useGetAuthToken from "./useGetAuthToken";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { queryClient } from "@/components/tanstack-provider/provider";
 
 export default function useCreatePost() {
   const token = useGetAuthToken();
@@ -45,6 +46,12 @@ export default function useCreatePost() {
         });
         setCreatePostLoading(false);
       }
+    },
+    onSuccess: () => {
+      console.log("Mutation successful! Invalidating query cache...");
+      queryClient.invalidateQueries({
+        queryKey: ["posts"]
+      });
     }
   });
   return {

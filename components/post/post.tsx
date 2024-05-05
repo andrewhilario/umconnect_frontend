@@ -20,6 +20,7 @@ type Props = {
     first_name: string;
     last_name: string;
     profile_picture: string;
+    username: string;
   };
 
   is_shared?: boolean;
@@ -45,7 +46,7 @@ export default function Post({ contents, user, is_shared = false }: Props) {
         })}
         post_type={contents.post_type}
         onClick={() => {
-          router.push(`/profile/${user.id}`);
+          router.push(`/profile/${user.username}`);
         }}
       />
       <p className="text-sm">{contents.content}</p>

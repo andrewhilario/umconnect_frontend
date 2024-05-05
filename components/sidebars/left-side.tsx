@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/accordion";
 import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 import { useRouter } from "next/navigation";
+import ProfileImageComponent from "../profile-image/profile-image";
 
 type Props = {};
 
@@ -30,15 +31,12 @@ export default function LeftSideBar({}: Props) {
         cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
         onClick={() => router.push(`/profile`)}
       >
-        <Avatar className="border-2 border-blue-600 ">
-          <AvatarImage
-            src={profile?.profile_picture ?? "/images/profile.jpg"}
-            alt="profile"
-          />
-          <AvatarFallback>
-            {profile?.first_name[0]} {profile?.last_name[0]}
-          </AvatarFallback>
-        </Avatar>
+        <ProfileImageComponent
+          image={profile?.profile_picture}
+          className="w-12 h-12 border-2 border-blue-600"
+          imageClassName="rounded-full w-full h-full object-cover"
+        />
+
         <div>
           <p className="text-2xl">
             <strong>
@@ -50,6 +48,7 @@ export default function LeftSideBar({}: Props) {
       <div
         className="flex items-center gap-4
         cursor-pointer hover:bg-gray-200 p-2 rounded-lg"
+        onClick={() => router.push(`/friends`)}
       >
         <UserCheck2 size={24} className="text-blue-600" />
         <div>

@@ -2,13 +2,16 @@
 /* eslint-disable @next/next/no-img-element */
 import Navbar from "@/components/navbar/navbar";
 import {
+  Ban,
+  Check,
+  EllipsisVertical,
   ImagePlus,
   Pencil,
   Plus,
   SlidersHorizontal,
   Video
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -54,6 +57,11 @@ import useGetAllEmoji from "@/components/emoji-picker/hooks/useGetAllEmoji";
 import useGetEmojiCategory from "@/components/emoji-picker/hooks/useGetEmojiCategory";
 import useGetEmojiInCategory from "@/components/emoji-picker/hooks/useGetEmojiInCategory";
 import { items } from "@/components/emoji-picker/constants/emoji-category";
+import useViewProfileByUsername from "@/hooks/useViewProfileByUsername";
+import { Skeleton } from "@/components/ui/skeleton";
+import useSendFriendRequest from "@/hooks/useSendFriendRequest";
+import useGetAllFriendRequests from "@/hooks/useGetAllFriendRequests";
+import useRemoveFriendRequest from "@/hooks/useRemoveFriendRequest";
 
 const iconComponents: { [key: string]: React.ComponentType<any> } = {
   Smile,
@@ -74,13 +82,43 @@ type Props = {
 export default function ProfilePageById() {
   const { data: session } = useSession();
   const { selectedEmoji, setSelectedEmoji } = useSelectedEmoji();
-  const { profile, profileLoading, profileError } = useGetProfileByUser();
+  const { profile, profileLoading, profileError } = useViewProfileByUsername();
   const { userPosts, userPostsError, userPostsLoading } = useGetPostByUser();
+  const { sendFriendRequest, sendFriendReqLoading } = useSendFriendRequest();
+  const { friendRequests, friendRequestLoading, error } =
+    useGetAllFriendRequests();
+  const { removeFriendRequest, removeFriendReqLoading } =
+    useRemoveFriendRequest();
 
   useEffect(() => {
-    console.log("PROFILE", profile);
-    console.log("PROFILE EMOJI", selectedEmoji);
-  }, [profile, selectedEmoji]);
+    console.log("USER POSTS: ", userPosts);
+    console.log("PROFILE: ", profile);
+  }, [profile, session?.user?.email, session?.user.id, userPosts]);
+
+  if (profileLoading) {
+    return (
+      <div className="w-full bg-[#EDEDED] min-h-screen">
+        <Navbar />
+        <div className="w-full bg-white pb-60">
+          <div className="w-[70%] mx-auto ">
+            <Skeleton className="w-full h-[400px] rounded-b-2xl bg-gray-400" />
+            <div className="ml-26 mt-5 flex justify-between items-center">
+              <div className="">
+                <Skeleton className="w-32 h-32 2xl:w-40 2xl:h-40 rounded-full bg-gray-400" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className=" w-52 h-10 text-white rounded-md flex justify-center gap-2 items-center bg-gray-400" />
+              </div>
+            </div>
+            <div className="flex gap-10 items-center mx-auto mt-32">
+              <Skeleton className="w-1/2 h-10 text-white rounded-md flex justify-center gap-2 items-center bg-gray-400" />
+              <Skeleton className="w-1/2 h-10 text-white rounded-md flex justify-center gap-2 items-center bg-gray-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#EDEDED] min-h-screen">
@@ -98,9 +136,9 @@ export default function ProfilePageById() {
             {/* Profile Picture */}
             <div className="absolute -bottom-12 left-10 2xl:-bottom-32 2xl:left-18">
               <img
-                src={profile?.profile_picture ?? "/images/profile.jpg"}
+                src={profile?.profile_picture ?? "/images/default.png"}
                 alt="profile"
-                className="w-32 h-32 2xl:w-40 2xl:h-40 rounded-full border-4 border-blue-400"
+                className="w-32 h-32 2xl:w-40 2xl:h-40 rounded-full object-cover border-4 border-blue-400"
               />
             </div>
             {/* Details */}
@@ -111,7 +149,8 @@ export default function ProfilePageById() {
                 </h1>
                 {/* <p className="text-lg mt-2 text-[#232b2b]">Web Developer</p> */}
               </div>
-              {session?.user?.email === profile?.email && (
+              {}
+              {session?.user?.email === profile?.email ? (
                 <div className="flex gap-2">
                   {/* Add Story and Edit Profile button */}
                   <button className="bg-blue-500 px-4 py-2 text-white rounded-md flex justify-center gap-2 items-center">
@@ -128,6 +167,77 @@ export default function ProfilePageById() {
                     }
                     className="p-8 w-1/2"
                   />
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  {sendFriendReqLoading ? (
+                    <button className="bg-blue-500 px-4 py-2 text-white rounded-md flex justify-center gap-2 items-center">
+                      <Loader2 size={16} className="text-white animate-spin" />
+                      <span>Sending Request...</span>
+                    </button>
+                  ) : !profileLoading &&
+                    profile?.friend_requests?.find(
+                      (friendRequest: any) =>
+                        friendRequest?.receiver?.id === profile?.id &&
+                        friendRequest?.sender?.email === session?.user?.email
+                    )?.is_accepted === false ? (
+                    <div className="flex gap-2">
+                      <button className="border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-md flex justify-center gap-2 items-center">
+                        <Check size={16} className="text-blue-600" />
+                        <span>Friend Request Sent</span>
+                      </button>
+                      <Popover>
+                        <PopoverTrigger>
+                          <div className="p-2 bg-blue-600 rounded-lg">
+                            <EllipsisVertical
+                              size={28}
+                              className="text-white"
+                            />
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent align="end">
+                          {removeFriendReqLoading ? (
+                            <button
+                              className="text-red-600 flex gap-2 items-center"
+                              disabled
+                            >
+                              <Loader2
+                                size={16}
+                                className="text-red-600 animate-spin"
+                              />
+                              <span>Cancelling Request...</span>
+                            </button>
+                          ) : (
+                            <button
+                              className="text-red-600 flex gap-2 items-center"
+                              onClick={() =>
+                                removeFriendRequest(
+                                  profile?.friend_requests?.find(
+                                    (friendRequest: any) =>
+                                      friendRequest?.receiver?.id ===
+                                        profile?.id &&
+                                      friendRequest?.sender?.email ===
+                                        session?.user?.email
+                                  )?.id
+                                )
+                              }
+                            >
+                              <Ban size={16} className="text-red-600" />
+                              <span>Cancel Request</span>
+                            </button>
+                          )}
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  ) : (
+                    <button
+                      className="bg-blue-500 px-4 py-2 text-white rounded-md flex justify-center gap-2 items-center"
+                      onClick={() => sendFriendRequest(profile?.id)}
+                    >
+                      <Plus size={16} className="text-white" />
+                      Send Friend Request
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -180,9 +290,9 @@ export default function ProfilePageById() {
                     <AvatarImage src="/images/profile.jpg" alt="profile" />
                   </Avatar> */}
                     <img
-                      src={profile?.profile_picture ?? "/images/profile.jpg"}
+                      src={profile?.profile_picture ?? "/images/default.png"}
                       alt="profile"
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 rounded-full object-cover"
                     />
                     <CreatePostOnProfileModal
                       trigger={
@@ -195,7 +305,7 @@ export default function ProfilePageById() {
                         />
                       }
                     />
-                    <EmojiPickerComponent />
+                    {/* <EmojiPickerComponent /> */}
                   </div>
                   <hr className="my-4" />
                   <div className="grid grid-cols-3 gap-2">
@@ -231,6 +341,9 @@ export default function ProfilePageById() {
               </div>
 
               {!userPostsLoading &&
+                userPosts?.find(
+                  (post: any) => post?.user?.email === profile?.email
+                ) &&
                 userPosts?.map((post: any) => {
                   return (
                     <div

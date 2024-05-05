@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ProfilePageById from "./[id]/page";
+import ProfilePageById from "./[username]/page";
 import { useSelectedEmoji } from "@/components/emoji-picker/emoji-picker";
 
 type Props = {};
