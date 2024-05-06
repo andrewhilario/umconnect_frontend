@@ -39,7 +39,7 @@ export default function StoryComponent({}: Props) {
           className="basis-1/5 cursor-pointer"
           onClick={() => router.push("/stories/create")}
         >
-          <div className="relative rounded-lg h-full">
+          <div className="relative rounded-lg h-[250px]">
             <img
               src={profile?.profile_picture ?? "/images/default.png"}
               alt="Reel"
