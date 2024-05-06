@@ -104,18 +104,14 @@ export default function Login({}: Props) {
           </p>
         </Link>
         <hr className="mt-4" />
-        <RegistrationModalComponent
-          trigger={
-            <div
-              className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full cursor-pointer text-center self-center"
-              onClick={() => {
-                router.replace("/register?modal=true");
-              }}
-            >
-              Create a new account
-            </div>
-          }
-        />
+        <div
+          className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full cursor-pointer text-center self-center"
+          onClick={() => {
+            router.replace("/register?modal=true");
+          }}
+        >
+          Create a new account
+        </div>
       </div>
     </div>
   );
