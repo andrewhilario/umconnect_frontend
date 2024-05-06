@@ -156,14 +156,14 @@ const RegistrationModalComponent = ({ trigger, open }: Props) => {
             Sign Up
           </button>
 
-          <button
+          <div
             onClick={() => {
               router.replace("/login");
             }}
-            className="bg-gray-500 text-white p-2 rounded-lg"
+            className="bg-gray-500 text-white p-2 rounded-lg text-center cursor-pointer"
           >
             Cancel
-          </button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
