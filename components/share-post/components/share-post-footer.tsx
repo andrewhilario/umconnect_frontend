@@ -3,6 +3,7 @@ import SharePostModal from "@/components/share-post/modal/share-post-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 import useLikePostById from "@/hooks/useLikePostById";
+import useLikeSharedPost from "@/hooks/useLikeSharedPost";
 import useUnlikePostById from "@/hooks/useUnlikePostById";
 import { MessageSquareMore, Send, ThumbsUp } from "lucide-react";
 import React, { useEffect } from "react";
@@ -12,22 +13,30 @@ import { FaShare } from "react-icons/fa";
 type Props = {
   id?: number;
   contents: any;
-  isShared?: boolean;
 };
 
-export default function PostFooterComponent({ id, contents }: Props) {
+export default function SharePostFooterComponent({ id, contents }: Props) {
   const { profile } = useGetProfileByUser();
   const [postId, setPostId] = React.useState<number | null>(
     id as number | null
   );
+  const [shareLikes, setShareLikes] = React.useState<any[]>([]);
 
-  const { likePostById } = useLikePostById();
-  const { unlikePostById } = useUnlikePostById();
+  const { likeSharedPost } = useLikeSharedPost();
 
   useEffect(() => {
-    console.log("POST ID", contents);
-    console.log("PROFILE", profile);
+    if (contents?.is_shared) {
+      const likes = contents?.shares?.map((share: any) => {
+        return share?.likes;
+      });
+
+      setShareLikes(likes.flat());
+    }
   }, [contents, profile]);
+
+  useEffect(() => {
+    console.log("SHARE LIKES", shareLikes);
+  }, [shareLikes]);
 
   return (
     <div className="block">
@@ -41,18 +50,27 @@ export default function PostFooterComponent({ id, contents }: Props) {
               });
 
               if (liked) {
-                unlikePostById({ id: id as number });
+                likeSharedPost(
+                  contents?.shares?.find((share: any) => share.post?.id === id)
+                    ?.id as number
+                );
               } else {
-                likePostById({ id: id as number });
+                likeSharedPost(
+                  contents?.shares?.find((share: any) => share.post?.id === id)
+                    ?.id as number
+                );
               }
             } else {
-              likePostById({ id: id as number });
+              likeSharedPost(
+                contents?.shares?.find((share: any) => share.post?.id === id)
+                  ?.id as number
+              );
             }
           }}
         >
-          {contents?.likes?.length > 0 &&
-          contents?.likes.find((user: any) => {
-            return user?.id === profile?.id;
+          {shareLikes?.length > 0 &&
+          shareLikes?.find((share: any) => {
+            return share?.user?.id === profile?.id;
           }) ? (
             <AiFillLike size={16} className="text-blue-600" />
           ) : (
@@ -71,7 +89,12 @@ export default function PostFooterComponent({ id, contents }: Props) {
           trigger={
             <div
               className="flex gap-2 items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer"
-              onClick={() => setPostId(id as number)}
+              onClick={() =>
+                setPostId(
+                  contents?.shares?.find((share: any) => share.post?.id === id)
+                    ?.post?.id as number
+                )
+              }
             >
               <FaShare size={16} className="text-blue-600" />
               <p className="text-sm font-medium">Share</p>

@@ -7,6 +7,8 @@ import PostFooterComponent from "./components/post-footer";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import Post from "./post";
+import SharePostHeaderComponent from "../share-post/components/share-post-header";
+import SharePostFooterComponent from "../share-post/components/share-post-footer";
 
 type Props = {
   contents: {
@@ -35,11 +37,12 @@ export default function SharePost({ contents, user, share }: Props) {
       const images = JSON.parse(contents?.post_image);
       setImages(images);
     }
+    console.log("SHARE", contents);
   }, [contents]);
 
   return (
     <div className="flex flex-col gap-4 bg-white rounded-xl p-4">
-      <PostHeaderComponent
+      <SharePostHeaderComponent
         {...share?.user}
         timestamp={formatDistanceToNow(share.created_at, {
           addSuffix: true
@@ -52,11 +55,7 @@ export default function SharePost({ contents, user, share }: Props) {
       <div className="p-2 border rounded-lg border-gray-500">
         <Post contents={contents} user={user} is_shared={true} />
       </div>
-      <PostFooterComponent
-        id={contents.id}
-        contents={contents}
-        isShared={true}
-      />
+      <SharePostFooterComponent id={contents.id} contents={contents} />
     </div>
   );
 }
