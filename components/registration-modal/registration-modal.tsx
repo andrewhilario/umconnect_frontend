@@ -125,23 +125,23 @@ const RegistrationModalComponent = ({ trigger, open }: Props) => {
           <div className="text-xs">
             People who use our service may have uploaded your contact
             information to Paysbook.
-            <Link href="http://" target="_blank" rel="noopener noreferrer">
+            <Link href="/" target="_blank" rel="noopener noreferrer">
               Learn more.
             </Link>
           </div>
           <div className="text-xs">
             By clicking Sign Up, you agree to our
-            <a href="http://" target="_blank" rel="noopener noreferrer">
+            <a href="/" target="_blank" rel="noopener noreferrer">
               {" "}
               Terms
             </a>
             ,
-            <a href="http://" target="_blank" rel="noopener noreferrer">
+            <a href="/" target="_blank" rel="noopener noreferrer">
               {" "}
               Data Policy
             </a>{" "}
             and
-            <a href="http://" target="_blank" rel="noopener noreferrer">
+            <a href="/" target="_blank" rel="noopener noreferrer">
               {" "}
               Cookies Policy
             </a>
