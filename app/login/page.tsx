@@ -101,7 +101,7 @@ export default function Login({}: Props) {
           </button>
         </form>
 
-        <Link href="/forgot-password">
+        <Link href="/">
           <p className="text-blue-500 text-center cursor-pointer w-full mt-2">
             Forgot Password?
           </p>
