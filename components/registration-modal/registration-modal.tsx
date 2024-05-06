@@ -8,17 +8,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
+  DialogClose
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import useUserRegistration from "@/hooks/useUserRegistration";
 import { useForm } from "react-hook-form";
 
-type Props = {};
+import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
-export default function RegistrationModalComponent({}: Props) {
+type Props = {
+  trigger: React.ReactNode;
+  open?: boolean;
+};
+
+export default function RegistrationModalComponent({ trigger, open }: Props) {
   const { register: UserRegistration } = useUserRegistration();
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -53,11 +60,14 @@ export default function RegistrationModalComponent({}: Props) {
     }
   };
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) reset();
+      }}
+    >
       <DialogTrigger className="w-full" asChild>
-        <div className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full cursor-pointer text-center self-center">
-          Create a new account
-        </div>
+        {trigger}
       </DialogTrigger>
       <DialogContent className="w-full xl:w-[500px]">
         <DialogTitle>Sign Up</DialogTitle>
@@ -144,6 +154,15 @@ export default function RegistrationModalComponent({}: Props) {
             className="bg-green-500 text-white p-4 rounded-lg"
           >
             Sign Up
+          </button>
+
+          <button
+            onClick={() => {
+              router.replace("/login");
+            }}
+            className="bg-gray-500 text-white p-2 rounded-lg"
+          >
+            Cancel
           </button>
         </form>
       </DialogContent>

@@ -6,7 +6,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import useUserRegistration from "@/hooks/useUserRegistration";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import RegistrationModalComponent from "@/components/registration-modal/registration-modal";
 import { Loader2 } from "lucide-react";
 
@@ -18,6 +18,7 @@ export default function Login({}: Props) {
   const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const query = useSearchParams();
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -57,6 +58,8 @@ export default function Login({}: Props) {
       setPassword("");
     }
   };
+
+  console.log("PARAMS", query);
 
   return (
     <div className="flex flex-col lg:flex-row justify-between items-center mt-24 xl:mx-64 xl:mt-80">
@@ -105,6 +108,7 @@ export default function Login({}: Props) {
         </Link>
         <hr className="mt-4" />
         <RegistrationModalComponent
+          open={query.get("modal") === "true"}
           trigger={
             <div
               className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full cursor-pointer text-center self-center"
