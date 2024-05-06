@@ -16,12 +16,8 @@ export default function Login({}: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -57,7 +53,8 @@ export default function Login({}: Props) {
         }
       });
 
-      reset();
+      setEmail("");
+      setPassword("");
     }
   };
 
@@ -70,25 +67,25 @@ export default function Login({}: Props) {
         <p className="text-xs 2xl:text-2xl">Connect, Share and Earn</p>
       </div>
       <div className="w-full lg:w-[40%] shadow-md p-10 rounded-lg">
-        <form
-          className="flex flex-col space-y-3"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form className="flex flex-col space-y-3">
           <input
             type="email"
             placeholder="Email"
             className="p-2 border border-gray-300 rounded-md"
-            {...register("email", { required: true })}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
             placeholder="Password"
             className="p-2 border border-gray-300 rounded-md"
-            {...register("password", { required: true })}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
-            type="submit"
             className="bg-blue-900 text-white p-4 rounded-lg"
+            onClick={(e) => {
+              e.preventDefault();
+              onSubmit({ email, password });
+            }}
           >
             {loading ? (
               <div className="flex justify-center gap-1 items-center">
