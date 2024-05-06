@@ -55,9 +55,9 @@ export default function RegistrationModalComponent({}: Props) {
   return (
     <Dialog>
       <DialogTrigger className="w-full" asChild>
-        <button className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full">
+        <div className="bg-green-500 text-white p-4 rounded-lg mt-4 w-full cursor-pointer">
           Create a new account
-        </button>
+        </div>
       </DialogTrigger>
       <DialogContent className="w-full xl:w-[500px]">
         <DialogTitle>Sign Up</DialogTitle>
