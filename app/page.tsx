@@ -11,6 +11,8 @@ import { Wrench } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import HeaderNav from "@/components/mobile-components/header-nav";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const MobileView = () => {
   return (
@@ -30,10 +32,18 @@ const MobileView = () => {
 };
 
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
   // get the dimnesion of the viewport
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 0
   );
+
+  useEffect(() => {
+    if (!session) {
+      router.push("/login");
+    }
+  }, [router, session]);
 
   return (
     <div className="bg-[#EDEDED] min-h-screen">

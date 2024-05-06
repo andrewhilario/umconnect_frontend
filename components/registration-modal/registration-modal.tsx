@@ -23,7 +23,7 @@ type Props = {
   open?: boolean;
 };
 
-export default function RegistrationModalComponent({ trigger, open }: Props) {
+const RegistrationModalComponent = ({ trigger, open }: Props) => {
   const { register: UserRegistration } = useUserRegistration();
   const router = useRouter();
   const {
@@ -168,4 +168,6 @@ export default function RegistrationModalComponent({ trigger, open }: Props) {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default RegistrationModalComponent;
