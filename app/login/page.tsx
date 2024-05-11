@@ -1,8 +1,8 @@
 "use client";
 
-import { SignInResponse, signIn, signOut } from "next-auth/react";
+import { SignInResponse, signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import useUserRegistration from "@/hooks/useUserRegistration";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,6 +18,8 @@ export default function Login({}: Props) {
   const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+  const { data: session } = useSession();
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -40,7 +42,9 @@ export default function Login({}: Props) {
               description: "You have successfully logged in"
             });
             setLoading(false);
-            router.push("/");
+            if (session) {
+              router.push("/");
+            }
           } else {
             console.error("ERROR", error);
             toast({
@@ -57,6 +61,12 @@ export default function Login({}: Props) {
       setPassword("");
     }
   };
+
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [router, session]);
 
   return (
     <div className="flex flex-col lg:flex-row justify-between items-center mt-24 xl:mx-64 xl:mt-80">
