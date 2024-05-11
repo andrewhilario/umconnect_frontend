@@ -44,6 +44,10 @@ export default function Login({}: Props) {
             setLoading(false);
             if (session) {
               router.push("/");
+
+              if (typeof window !== "undefined") {
+                window.location.href = "/";
+              }
             }
           } else {
             console.error("ERROR", error);
