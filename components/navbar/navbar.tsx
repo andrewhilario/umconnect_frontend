@@ -15,6 +15,9 @@ import useUpdateAuthToken from "@/hooks/useUpdateAuthToken";
 import useGetProfileByUser from "@/hooks/useGetProfileByUser";
 import HeaderNav from "../mobile-components/header-nav";
 import ProfileImageComponent from "../profile-image/profile-image";
+import useGetAllNotifications from "@/hooks/useGetAllNotification";
+import useUpdateNotification from "@/hooks/useUpdateNotification";
+import useUpdateAllNotification from "@/hooks/useUpdateAllNotifcation";
 
 type Props = {};
 
@@ -23,6 +26,9 @@ export default function Navbar({}: Props) {
   const { data: session } = useSession();
   const { updateToken } = useUpdateAuthToken();
   const { profile } = useGetProfileByUser();
+  const { notifications, notificationsLoading } = useGetAllNotifications();
+  const { updateNotification } = useUpdateNotification();
+  const { updateAllNotification } = useUpdateAllNotification();
 
   useEffect(() => {
     console.log("SESSION", session?.token);
@@ -49,14 +55,85 @@ export default function Navbar({}: Props) {
             UM Connect
           </h1>
           <div className="hidden xl:flex gap-6 items-center text-white">
-            <Bell size={24} />
+            <Popover>
+              <PopoverTrigger>
+                <div className="relative">
+                  <div
+                    className={`${
+                      !notificationsLoading &&
+                      notifications?.results?.length > 0 &&
+                      !notifications?.results?.every(
+                        (notifs: any) => notifs.is_read
+                      )
+                        ? "animate-pulse bg-red-500"
+                        : ""
+                    } absolute top-0 right-0 w-2 h-2 rounded-full`}
+                  ></div>
+                  <Bell size={32} className="text-white cursor-pointer" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-2 w-[150px] text-sm xl:w-[400px] xl:text-md"
+                align="start"
+              >
+                <div className="flex justify-between items-center gap-2 cursor-pointer p-2 rounded-lg w-full text-xl font-semibold">
+                  <p>Notifications</p>
+                  <p
+                    className="text-blue-500 text-sm cursor-pointer"
+                    onClick={() => {
+                      updateAllNotification();
+                    }}
+                  >
+                    Mark all as read
+                  </p>
+                </div>
+                {!notificationsLoading &&
+                  notifications?.results?.length === 0 && (
+                    <div className="flex justify-center items-center gap-2 text-gray-400 text-center cursor-pointer hover:bg-gray-200 p-2 rounded-lg w-full text-lg py-24">
+                      <p>No Notifications</p>
+                    </div>
+                  )}
+                <div className="w-full h-[300px] overflow-y-auto scrollbar-thin ">
+                  {!notificationsLoading &&
+                    notifications?.results?.map((notifs: any) => {
+                      return (
+                        <div
+                          key={notifs.id}
+                          className={`flex cursor-pointer p-3 rounded-lg w-full text-lg flex-col my-1 ${
+                            !notifs.is_read ? "bg-blue-500" : ""
+                          }`}
+                          onClick={() => {
+                            updateNotification(notifs.id);
+                          }}
+                        >
+                          <p
+                            className={`${
+                              !notifs.is_read ? "text-white" : "text-black"
+                            } font-semibold text-[16px]`}
+                          >
+                            {notifs.title}
+                          </p>
+                          <p
+                            className={`${
+                              !notifs?.is_read ? "text-white" : "text-black"
+                            } text-sm`}
+                          >
+                            {notifs.message}
+                          </p>
+                        </div>
+                      );
+                    })}
+                </div>
+              </PopoverContent>
+            </Popover>
             <MessageCircleMore
-              size={24}
+              size={32}
+              className="cursor-pointer"
               onClick={() => {
                 router.push("/messages");
               }}
             />
-            <MonitorPlay size={24} />
+            <MonitorPlay size={32} className="cursor-pointer" />
           </div>
         </div>
         <div className="flex gap-4 items-center p-4">
@@ -98,7 +175,9 @@ export default function Navbar({}: Props) {
               <div
                 className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-lg mt-2"
                 onClick={() => {
-                  signOut();
+                  signOut().then(() => {
+                    router.push("/login");
+                  });
                 }}
               >
                 <LogOut size={24} className="text-red-500" />

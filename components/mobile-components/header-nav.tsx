@@ -19,6 +19,9 @@ export default function HeaderNav() {
         className={`flex justify-center items-center p-4 cursor-pointer ${
           pathname === "/" ? "border-b-2 border-blue-600" : ""
         }`}
+        onClick={() => {
+          router.push("/");
+        }}
       >
         {pathname === "/" ? (
           <AiFillHome size={24} className="text-blue-600" />
@@ -30,6 +33,9 @@ export default function HeaderNav() {
         className={`flex justify-center items-center p-4 cursor-pointer ${
           pathname === "/friends" ? "border-b-2 border-blue-600" : ""
         }`}
+        onClick={() => {
+          router.push("/friends");
+        }}
       >
         {pathname === "/friends" ? (
           <HiUsers size={24} className="text-blue-600" />

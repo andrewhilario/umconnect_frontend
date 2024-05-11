@@ -3,26 +3,25 @@ import useGetAuthToken from "./useGetAuthToken";
 import { API_URL } from "@/constant/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { queryClient } from "@/components/tanstack-provider/provider";
 
-export default function useRemoveFriendRequest() {
-  const [removeFriendReqLoading, setRemoveFriendReqLoading] = useState(false);
+export default function useCreateCommentForPost() {
+  const [commentLoading, setCommentLoading] = useState<boolean>(false);
   const token = useGetAuthToken();
   const { toast } = useToast();
-
-  const { mutate: removeFriendRequest } = useMutation({
-    mutationKey: ["remove-friend-request"],
-    mutationFn: async (friendId: number | undefined) => {
+  const { mutate: createCommentForPost } = useMutation({
+    mutationKey: ["create-comment-for-post"],
+    mutationFn: async (commentData: any) => {
       try {
-        setRemoveFriendReqLoading(true);
+        setCommentLoading(true);
         const response = await fetch(
-          `${API_URL}/api/users/remove-friend-request/${friendId}/`,
+          `${API_URL}/api/posts/${commentData.postId}/comment/`,
           {
-            method: "DELETE",
+            method: "PATCH",
             headers: {
               "Content-Type": "application/json",
               Authorization: `${token}`
-            }
+            },
+            body: JSON.stringify({ comment: commentData.comment })
           }
         );
 
@@ -34,7 +33,7 @@ export default function useRemoveFriendRequest() {
             description: data.message,
             variant: "destructive"
           });
-          setRemoveFriendReqLoading(false);
+          setCommentLoading(false);
         }
 
         if (response.ok) {
@@ -43,32 +42,21 @@ export default function useRemoveFriendRequest() {
             description: data.message,
             variant: "success"
           });
-          setRemoveFriendReqLoading(false);
+          setCommentLoading(false);
           return data;
         }
+
+        setCommentLoading(false);
       } catch (error) {
         toast({
           title: "Error",
           description: String(error),
           variant: "destructive"
         });
-        setRemoveFriendReqLoading(false);
+        setCommentLoading(false);
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notifications"]
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["friends-requests"]
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["profile-username"]
-      });
     }
   });
 
-  return { removeFriendRequest, removeFriendReqLoading };
+  return { createCommentForPost, commentLoading };
 }

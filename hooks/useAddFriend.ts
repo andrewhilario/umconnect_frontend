@@ -3,6 +3,7 @@ import useGetAuthToken from "./useGetAuthToken";
 import { API_URL } from "@/constant/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { queryClient } from "@/components/tanstack-provider/provider";
 
 export default function useAddFriend() {
   const [addFriendLoading, setAddFriendLoading] = useState(false);
@@ -53,6 +54,23 @@ export default function useAddFriend() {
         });
         setAddFriendLoading(false);
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["friend-requests"]
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"]
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["friends"]
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["profile-username"]
+      });
     }
   });
 

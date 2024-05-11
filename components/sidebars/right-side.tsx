@@ -2,6 +2,7 @@
 
 import useGetFriendLists from "@/hooks/useGetFriendLists";
 import { MapPin, Pin } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -11,12 +12,14 @@ type Props = {};
 export default function RightSideBar({}: Props) {
   const { friends, isLoading } = useGetFriendLists();
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (!isLoading) {
       console.log("FRIENDS", friends);
+      console.log("SESSION", session);
     }
-  }, [friends, isLoading]);
+  }, [friends, isLoading, session]);
 
   return (
     // Pages and Profile
@@ -89,36 +92,62 @@ export default function RightSideBar({}: Props) {
       <div className="flex justify-between items-center mt-4">
         <p className="text-lg font-semibold">Chat</p>
       </div>
-      {!isLoading &&
-        friends?.results?.map((fr: any) => {
-          return (
-            <div
-              className="flex items-center gap-4 p-2 hover:bg-gray-200 rounded-lg cursor-pointer"
-              key={fr.friend.id}
-              onClick={() => {
-                router.push(`/messages?friend=${fr.friend.id}`);
-              }}
-            >
-              <div>
-                <Image
-                  src={
-                    fr.friend.profile_picture ??
-                    "https://images.pexels.com/photos/3760069/pexels-photo-3760069.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                  }
-                  alt="Vercel Logo"
-                  width={500}
-                  height={500}
-                  className="w-12 h-12 rounded-full"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-semibold">
-                  {fr.friend.first_name} {fr.friend.last_name}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+      <div className="block h-96 overflow-y-scroll no-scrollbar">
+        {!isLoading &&
+          friends?.results?.map((fr: any) => {
+            if (fr.friend.email === session?.user?.email) {
+              return (
+                <div
+                  className="flex items-center gap-4 p-2 hover:bg-gray-200 rounded-lg cursor-pointer"
+                  key={fr.user.id}
+                  onClick={() => {
+                    router.push(`/messages?friend=${fr.user.id}`);
+                  }}
+                >
+                  <div>
+                    <Image
+                      src={fr.user.profile_picture ?? "/images/default.png"}
+                      alt="Vercel Logo"
+                      width={500}
+                      height={500}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-lg font-semibold">
+                      {fr.user.first_name} {fr.user.last_name}
+                    </p>
+                  </div>
+                </div>
+              );
+            } else {
+              return (
+                <div
+                  className="flex items-center gap-4 p-2 hover:bg-gray-200 rounded-lg cursor-pointer"
+                  key={fr.friend.id}
+                  onClick={() => {
+                    router.push(`/messages?friend=${fr.friend.id}`);
+                  }}
+                >
+                  <div>
+                    <Image
+                      src={fr.friend.profile_picture ?? "/images/default.png"}
+                      alt="Vercel Logo"
+                      width={500}
+                      height={500}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-lg font-semibold">
+                      {fr.friend.first_name} {fr.friend.last_name}
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+          })}
+      </div>
     </div>
   );
 }

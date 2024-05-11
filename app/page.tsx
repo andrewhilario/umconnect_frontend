@@ -54,7 +54,7 @@ export default function Home() {
           <LeftSideBar />
         </div>
 
-        <div className="xl:col-span-3 h-screen overflow-y-auto no-scrollbar">
+        <div className="xl:col-span-3 h-full overflow-y-auto no-scrollbar">
           <div className="">
             <div className="hidden xl:block">
               <StoryComponent />

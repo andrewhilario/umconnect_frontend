@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
-import { Camera, Earth, Lock, Users, X } from "lucide-react";
+import { Camera, Earth, Loader2, Lock, Users, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "../ui/use-toast";
 import { useForm } from "react-hook-form";
@@ -238,12 +238,22 @@ export default function CreatePostComponent({}: Props) {
             accept="image/*"
             multiple
           />
-          <button
-            className="bg-blue-500 text-white px-8 py-2 rounded-lg"
-            type="submit"
-          >
-            Post
-          </button>
+          {createPostLoading ? (
+            <button
+              className="bg-blue-500 text-white px-8 py-2 rounded-lg flex gap-2 items-center"
+              disabled
+            >
+              <Loader2 size={24} className="text-white animate-spin" />
+              <span>Posting...</span>
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 text-white px-8 py-2 rounded-lg"
+              type="submit"
+            >
+              Post
+            </button>
+          )}
         </div>
       </form>
     </div>

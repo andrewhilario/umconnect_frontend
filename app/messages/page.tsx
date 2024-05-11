@@ -266,9 +266,9 @@ export default function Messages({}: Props) {
                       }}
                     >
                       <img
-                        src={fr.friend.profile_picture ?? "/images/profile.jpg"}
+                        src={fr.friend.profile_picture ?? "/images/default.png"}
                         alt="profile"
-                        className="w-10 h-10 rounded-full"
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="text-xs xl:text-xl font-medium">
                         <div>

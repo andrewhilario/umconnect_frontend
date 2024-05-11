@@ -1,22 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
-import useGetAuthToken from "./useGetAuthToken";
 import { API_URL } from "@/constant/api";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import useGetAuthToken from "./useGetAuthToken";
 import { queryClient } from "@/components/tanstack-provider/provider";
 
-export default function useRemoveFriendRequest() {
-  const [removeFriendReqLoading, setRemoveFriendReqLoading] = useState(false);
+export default function useRemoveFriend() {
+  const [removeFriendLoading, setRemoveFriendLoading] = useState(false);
   const token = useGetAuthToken();
   const { toast } = useToast();
 
-  const { mutate: removeFriendRequest } = useMutation({
-    mutationKey: ["remove-friend-request"],
+  const { mutate: removeFriend } = useMutation({
+    mutationKey: ["remove-friend"],
     mutationFn: async (friendId: number | undefined) => {
       try {
-        setRemoveFriendReqLoading(true);
+        setRemoveFriendLoading(true);
         const response = await fetch(
-          `${API_URL}/api/users/remove-friend-request/${friendId}/`,
+          `${API_URL}/api/users/add-friend/${friendId}/`,
           {
             method: "DELETE",
             headers: {
@@ -31,10 +31,10 @@ export default function useRemoveFriendRequest() {
         if (!response.ok) {
           toast({
             title: "Error",
-            description: data.message,
+            description: data.error,
             variant: "destructive"
           });
-          setRemoveFriendReqLoading(false);
+          setRemoveFriendLoading(false);
         }
 
         if (response.ok) {
@@ -43,7 +43,7 @@ export default function useRemoveFriendRequest() {
             description: data.message,
             variant: "success"
           });
-          setRemoveFriendReqLoading(false);
+          setRemoveFriendLoading(false);
           return data;
         }
       } catch (error) {
@@ -52,23 +52,13 @@ export default function useRemoveFriendRequest() {
           description: String(error),
           variant: "destructive"
         });
-        setRemoveFriendReqLoading(false);
+        setRemoveFriendLoading(false);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notifications"]
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["friends-requests"]
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["profile-username"]
-      });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
     }
   });
 
-  return { removeFriendRequest, removeFriendReqLoading };
+  return { removeFriend, removeFriendLoading };
 }

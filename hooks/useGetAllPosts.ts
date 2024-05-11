@@ -2,16 +2,25 @@
 
 import { API_URL } from "@/constant/api";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function useGetAllPosts() {
+  const [page, setPage] = useState(1);
   const {
     data: posts,
     isLoading,
     error
   } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ["posts", page],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/posts/`, {
+      let pageQuery;
+      if (page > 1) {
+        pageQuery = `?page=${page}`;
+      } else {
+        pageQuery = "";
+      }
+
+      const response = await fetch(`${API_URL}/api/posts/${pageQuery}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -25,10 +34,8 @@ export default function useGetAllPosts() {
       } else {
         throw new Error(data.message);
       }
-    },
-    staleTime: 1000 * 60 * 5,
-    refetchInterval: 1000 * 60 * 1 // 1 minute
+    }
   });
 
-  return { posts, isLoading, error };
+  return { posts, isLoading, error, setPage, page };
 }

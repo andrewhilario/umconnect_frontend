@@ -15,4 +15,11 @@
     .scrollable-y-hidden {
       overflow-y: hidden;
     }
+
+    .scrollbar-thin {
+      scrollbar-width: thin;
+    }
+
+    
   }
+  

@@ -57,6 +57,14 @@ export default function useSendFriendRequest() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
+        queryKey: ["notifications"]
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["friends-requests"]
+      });
+
+      queryClient.invalidateQueries({
         queryKey: ["profile-username"]
       });
     }

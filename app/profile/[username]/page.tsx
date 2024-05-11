@@ -62,6 +62,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useSendFriendRequest from "@/hooks/useSendFriendRequest";
 import useGetAllFriendRequests from "@/hooks/useGetAllFriendRequests";
 import useRemoveFriendRequest from "@/hooks/useRemoveFriendRequest";
+import useGetFriendLists from "@/hooks/useGetFriendLists";
+import useRemoveFriend from "@/hooks/useRemoveFriend";
 
 const iconComponents: { [key: string]: React.ComponentType<any> } = {
   Smile,
@@ -89,11 +91,17 @@ export default function ProfilePageById() {
     useGetAllFriendRequests();
   const { removeFriendRequest, removeFriendReqLoading } =
     useRemoveFriendRequest();
+  const { removeFriend, removeFriendLoading } = useRemoveFriend();
+  const { friends } = useGetFriendLists();
 
   useEffect(() => {
-    console.log("USER POSTS: ", userPosts);
-    console.log("PROFILE: ", profile);
-  }, [profile, session?.user?.email, session?.user.id, userPosts]);
+    console.log(
+      "FRIEND",
+      friends?.results?.some(
+        (fr: any) => fr.friend.id === profile?.id || fr.user.id === profile?.id
+      )
+    );
+  }, [friends?.results, profile?.id]);
 
   if (profileLoading) {
     return (
@@ -149,7 +157,7 @@ export default function ProfilePageById() {
                 </h1>
                 {/* <p className="text-lg mt-2 text-[#232b2b]">Web Developer</p> */}
               </div>
-              {}
+
               {session?.user?.email === profile?.email ? (
                 <div className="flex gap-2">
                   {/* Add Story and Edit Profile button */}
@@ -229,7 +237,11 @@ export default function ProfilePageById() {
                         </PopoverContent>
                       </Popover>
                     </div>
-                  ) : (
+                  ) : !friends?.results?.some(
+                      (fr: any) =>
+                        fr.friend.id === profile?.id ||
+                        fr.user.id === profile?.id
+                    ) ? (
                     <button
                       className="bg-blue-500 px-4 py-2 text-white rounded-md flex justify-center gap-2 items-center"
                       onClick={() => sendFriendRequest(profile?.id)}
@@ -237,6 +249,59 @@ export default function ProfilePageById() {
                       <Plus size={16} className="text-white" />
                       Send Friend Request
                     </button>
+                  ) : (
+                    <>
+                      <button
+                        className="border-2 border-blue-500 px-4 py-2 text-blue-500 rounded-md flex justify-center gap-2 items-center font-semibold"
+                        disabled
+                      >
+                        <Check
+                          size={16}
+                          className="text-blue-500 font-semibold"
+                        />
+                        Friends
+                      </button>
+                      <Popover>
+                        <PopoverTrigger>
+                          <div className="p-2 bg-blue-600 rounded-lg">
+                            <EllipsisVertical
+                              size={28}
+                              className="text-white"
+                            />
+                          </div>
+                        </PopoverTrigger>
+                        <PopoverContent align="end">
+                          {removeFriendLoading ? (
+                            <button
+                              className="text-red-600 flex gap-2 items-center"
+                              disabled
+                            >
+                              <Loader2
+                                size={16}
+                                className="text-red-600 animate-spin"
+                              />
+                              <span>Removing Friend...</span>
+                            </button>
+                          ) : (
+                            <button
+                              className="text-red-600 flex gap-2 items-center"
+                              onClick={() => {
+                                console.log("FRIENDS: ", friends);
+
+                                // removeFriend(
+                                //   friends?.results?.find(
+                                //     (fr: any) => fr.friend.id === profile?.id
+                                //   )?.friend?.id
+                                // );
+                              }}
+                            >
+                              <Ban size={16} className="text-red-600" />
+                              <span>Remove Friend</span>
+                            </button>
+                          )}
+                        </PopoverContent>
+                      </Popover>
+                    </>
                   )}
                 </div>
               )}
