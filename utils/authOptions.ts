@@ -58,7 +58,7 @@ export const authOptions: AuthOptions = {
             access_token: user.access
           };
         } else {
-          return user.error;
+          return null;
         }
       }
     })
