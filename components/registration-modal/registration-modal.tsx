@@ -16,7 +16,7 @@ import useUserRegistration from "@/hooks/useUserRegistration";
 import { useForm } from "react-hook-form";
 
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 type Props = {
   trigger: React.ReactNode;
@@ -24,8 +24,9 @@ type Props = {
 };
 
 const RegistrationModalComponent = ({ trigger, open }: Props) => {
-  const { register: UserRegistration } = useUserRegistration();
+  const { register: UserRegistration, loading } = useUserRegistration();
   const router = useRouter();
+  const [closeModal, setCloseModal] = React.useState(false);
   const {
     register,
     handleSubmit,
@@ -46,26 +47,31 @@ const RegistrationModalComponent = ({ trigger, open }: Props) => {
 
       console.log(data);
 
-      await UserRegistration({
-        first_name,
-        last_name,
-        email,
-        username,
-        phone_number,
-        password,
-        date_of_birth
-      });
-
-      reset();
+      await UserRegistration(
+        {
+          first_name,
+          last_name,
+          email,
+          username,
+          phone_number,
+          password,
+          date_of_birth
+        },
+        {
+          onSuccess: (data) => {
+            console.log("REGISTERED", data);
+            reset();
+            router.push("/");
+          },
+          onError: (error) => {
+            console.error("ERROR", error);
+          }
+        }
+      );
     }
   };
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        if (!open) reset();
-      }}
-    >
+    <Dialog>
       <DialogTrigger className="w-full" asChild>
         {trigger}
       </DialogTrigger>
@@ -124,46 +130,37 @@ const RegistrationModalComponent = ({ trigger, open }: Props) => {
           />
           <div className="text-xs">
             People who use our service may have uploaded your contact
-            information to Paysbook.
-            <Link href="/" target="_blank" rel="noopener noreferrer">
-              Learn more.
+            information to Paysbook.{" "}
+            <Link href="/" className="text-blue-500 cursor-pointer">
+              Learn more
             </Link>
           </div>
-          <div className="text-xs">
-            By clicking Sign Up, you agree to our
-            <a href="/" target="_blank" rel="noopener noreferrer">
-              {" "}
-              Terms
-            </a>
-            ,
-            <a href="/" target="_blank" rel="noopener noreferrer">
-              {" "}
-              Data Policy
-            </a>{" "}
-            and
-            <a href="/" target="_blank" rel="noopener noreferrer">
-              {" "}
-              Cookies Policy
-            </a>
-            . You may receive SMS notifications from us and can opt out at any
-            time.
-          </div>
 
-          <button
-            type="submit"
-            className="bg-green-500 text-white p-4 rounded-lg"
-          >
-            Sign Up
-          </button>
+          {loading ? (
+            <button
+              disabled
+              className="disabled:bg-green-300 disabled:cursor-not-allowed text-white p-4 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Loader2 className="animate-spin" size={24} />
+              <span>Signing Up...</span>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="bg-green-500 text-white p-4 rounded-lg"
+            >
+              Sign Up
+            </button>
+          )}
 
-          <div
+          {/* <div
             onClick={() => {
               router.replace("/login");
             }}
             className="bg-gray-500 text-white p-2 rounded-lg text-center cursor-pointer"
           >
             Cancel
-          </div>
+          </div> */}
         </form>
       </DialogContent>
     </Dialog>

@@ -1,13 +1,20 @@
+"use client";
+
 import { API_URL } from "@/constant/api";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function useUserRegistration() {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const { mutate: register } = useMutation({
     mutationKey: ["register"],
     mutationFn: async (data: any) => {
+      setLoading(true);
       const registration_data = {
         email: data.email,
         username: data.username,
@@ -30,6 +37,7 @@ export default function useUserRegistration() {
 
       if (response.ok) {
         console.log("RESPONSE", response_data);
+        setLoading(false);
         toast({
           title: "Registration Successful",
           description: "You have successfully registered"
@@ -37,16 +45,19 @@ export default function useUserRegistration() {
 
         return response_data;
       } else {
-        throw new Error(response_data.error);
+        setLoading(false);
+        toast({
+          title: "Registration Failed",
+          description: "Check your details and try again",
+          variant: "destructive"
+        });
       }
-    },
-    onSuccess: (data) => {
-      console.log("REGISTERED", data);
-    },
-    onError: (error) => {
-      console.error("ERROR", error);
+
+      if (!response.ok) {
+        setLoading(false);
+      }
     }
   });
 
-  return { register };
+  return { register, loading };
 }
