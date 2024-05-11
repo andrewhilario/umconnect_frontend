@@ -67,8 +67,11 @@ export default function Login({}: Props) {
   };
 
   useEffect(() => {
-    if (session) {
+    if (session && session.user) {
       router.push("/");
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
     }
   }, [router, session]);
 
