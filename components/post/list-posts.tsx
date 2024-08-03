@@ -8,6 +8,7 @@ import SharePost from "./share-post";
 import { Loader2 } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import ListPostLoading from "./components/list-post-loading";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 type Props = {};
 
@@ -51,39 +52,36 @@ export default function ListPostsComponent({}: Props) {
     }
   }, [postings]);
 
+  const fetchMorePosts = () => {
+    if (!isLoading && posts?.next) {
+      setPage(page + 1);
+    }
+  };
+
   if (isLoading) {
     return <ListPostLoading />;
   }
 
   return (
     <div className="xl:h-[85vh] overflow-y-scroll no-scrollbar my-5 rounded-lg">
-      <div className="flex flex-col gap-4">
-        {!isLoading &&
-          postItems &&
-          postItems.length > 0 &&
-          postItems.map((post: any) => post)}
-
-        {/* load more */}
-        {posts?.next &&
-          (isLoading ? (
-            <button
-              className="border text-blue-500 border-blue-500 p-4 rounded-lg flex gap-2 items-center justify-center"
-              disabled
-            >
-              <Loader2 size={20} className="animate-spin" />
-              <span>Loading More Posts...</span>
-            </button>
-          ) : (
-            <button
-              className="bg-blue-500 text-white p-4 rounded-lg"
-              onClick={() => {
-                setPage(page + 1);
-              }}
-            >
-              Load More
-            </button>
-          ))}
-      </div>
+      <InfiniteScroll
+        dataLength={postings.length}
+        next={fetchMorePosts}
+        hasMore={!!posts?.next}
+        loader={<ListPostLoading />}
+        endMessage={
+          <p className="mt-10 text-blue-600 text-center">
+            <b>Yay! You have seen it all 🎉</b>
+          </p>
+        }
+        scrollableTarget="scrollableDiv"
+      >
+        <div className="flex flex-col gap-4">
+          {postItems &&
+            postItems.length > 0 &&
+            postItems.map((post: any) => post)}
+        </div>
+      </InfiniteScroll>
     </div>
   );
 }
